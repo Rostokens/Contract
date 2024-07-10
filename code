@@ -1,0 +1,64 @@
+/**
+ *Submitted for verification at polygonscan.com on 2024-07-03
+*/
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract ROS {
+
+
+    string public name = "ROS";
+    string public symbol = "ROS";
+
+
+    uint256 public totalSupply = 10000000000 * 10**18; 
+
+
+    address public owner = 0x0aE725Fd17dF096F960c60bD575D79eD14747fe2;
+
+
+    mapping(address => uint256) public balanceOf;
+
+
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
+
+    event Withdraw(address indexed owner, uint256 amount);
+
+
+    constructor() {
+        owner = msg.sender;
+        balanceOf[owner] = totalSupply;
+    }
+
+
+    function transfer(address to, uint256 value) public {
+        require(balanceOf[msg.sender] >= value, "Insufficient balance");
+        require(to != address(0), "Invalid recipient address");
+
+        balanceOf[msg.sender] -= value;
+        balanceOf[to] += value;
+
+        emit Transfer(msg.sender, to, value);
+    }
+
+
+    function withdraw(uint256 amount) public onlyOwner {
+        require(address(this).balance >= amount, "Insufficient contract balance");
+
+        payable(owner).transfer(amount);
+
+        emit Withdraw(owner, amount);
+    }
+
+    receive() external payable {
+
+    }
+
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+}
